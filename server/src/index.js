@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { PORT } from "./config.js";
 import { MONGO_URI } from "./config.js";
 import mongoose from "mongoose";
@@ -8,6 +9,8 @@ import authRoutes from "./routes/auth.route.js";
 const app = express();
 
 app.use(express.json());
+
+app.use(cors());
 
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
