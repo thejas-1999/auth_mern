@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  signInStart,
+  signInSuccess,
+  signInfailure,
+} from "../redux/user/UserSlice";
+
+import { useDispatch, useSelector } from "react-redux";
 
 import { useCookies } from "react-cookie";
 
 const SignIn = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const [_, setCookies] = useCookies(["access_token"]);
   const navigate = useNavigate();
 
@@ -19,8 +26,7 @@ const SignIn = () => {
     e.preventDefault();
 
     try {
-      setLoading(true);
-      setError(false);
+      dispatch(signInStart());
       const res = await axios.post(
         `http://localhost:3000/api/auth/signin`,
         formData
@@ -28,14 +34,12 @@ const SignIn = () => {
       setCookies("access_token", res.data.token);
       window.localStorage.setItem("userID", res.data.userID);
       alert("Login completed");
-      setLoading(false);
-      setError(false);
+      dispatch(signInSuccess(res.data));
       navigate("/");
     } catch (error) {
       console.log(error);
       alert("Login failed");
-      setLoading(false);
-      setError(true);
+      dispatch(signInfailure(error));
     }
   };
 
